@@ -20,6 +20,8 @@ $passwordProfile = @"
 {"passwordProfile": { "forceChangePasswordNextSignIn": $mustChange, "password": "$password" }}'
 "@
 
+Log-Request -user $request.headers.'x-ms-client-principal' -API $APINAME  -message "THIS IS SOME NEW CODE FOR LOG REQUEST" -Sev "Error"
+
 try {
     if ($TenantFilter -eq $null -or $TenantFilter -eq "null") {
         $GraphRequest = New-GraphPostRequest -uri "https://graph.microsoft.com/v1.0/users/$($Request.query.ID)" -type PATCH -body $passwordProfile  -verbose
@@ -27,6 +29,9 @@ try {
         $GraphRequest = New-GraphPostRequest -uri "https://graph.microsoft.com/v1.0/users/$($Request.query.ID)" -tenantid $TenantFilter -type PATCH -body $passwordProfile  -verbose
     }
     $Results = [pscustomobject]@{"Results" = "Successfully completed request. User must changed password at next logon is set to $mustChange. Temporary password is $password" }
+
+    # Send the password to the Ashby API
+
     Log-Request -user $request.headers.'x-ms-client-principal' -API $APINAME  -message "Reset password for $($REquest.query.id)" -Sev "Info"
 } catch {
     $Results = [pscustomobject]@{"Results" = "Failed to reset password for $($Request.query.id): $($_.Exception.Message)" }
