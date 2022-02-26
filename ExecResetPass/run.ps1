@@ -20,8 +20,6 @@ $passwordProfile = @"
 {"passwordProfile": { "forceChangePasswordNextSignIn": $mustChange, "password": "$password" }}'
 "@
 
-log-request -user $request.headers.'x-ms-client-principal' -API $APINAME  -message "we did some extra jazz here" -Sev "Info"
-
 try {
     if ($TenantFilter -eq $null -or $TenantFilter -eq "null") {
         $GraphRequest = New-GraphPostRequest -uri "https://graph.microsoft.com/v1.0/users/$($Request.query.ID)" -type PATCH -body $passwordProfile  -verbose
