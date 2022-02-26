@@ -20,17 +20,17 @@ $passwordProfile = @"
 {"passwordProfile": { "forceChangePasswordNextSignIn": $mustChange, "password": "$password" }}'
 "@
 
+log-request -user $request.headers.'x-ms-client-principal' -API $APINAME  -message "we did some extra jazz here" -Sev "Info"
+
 try {
     if ($TenantFilter -eq $null -or $TenantFilter -eq "null") {
         $GraphRequest = New-GraphPostRequest -uri "https://graph.microsoft.com/v1.0/users/$($Request.query.ID)" -type PATCH -body $passwordProfile  -verbose
-    }
-    else {
+    } else {
         $GraphRequest = New-GraphPostRequest -uri "https://graph.microsoft.com/v1.0/users/$($Request.query.ID)" -tenantid $TenantFilter -type PATCH -body $passwordProfile  -verbose
     }
     $Results = [pscustomobject]@{"Results" = "Successfully completed request. User must changed password at next logon is set to $mustChange. Temporary password is $password" }
     Log-Request -user $request.headers.'x-ms-client-principal' -API $APINAME  -message "Reset password for $($REquest.query.id)" -Sev "Info"
-}
-catch {
+} catch {
     $Results = [pscustomobject]@{"Results" = "Failed to reset password for $($Request.query.id): $($_.Exception.Message)" }
     Log-Request -user $request.headers.'x-ms-client-principal' -API $APINAME  -message "Failed to reset password for $($Request.query.id): $($_.Exception.Message)" -Sev "Error"
 
